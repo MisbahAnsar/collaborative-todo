@@ -10,10 +10,6 @@ ConnectingDB();
 dotenv.config();
 app.use(express.json());
 
-app.get('/', (req, res) => {
-    console.log('Hello')
-})
-
 app.use('/user', router);
 
 const port = process.env.PORT || 5000;

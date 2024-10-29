@@ -1,4 +1,4 @@
-const User = require('../models/Schema');
+const { User }  = require('../models/Schema');
 const generateToken = require('../utils/generatetoken');
 
 const signupUser = async(req,res) => {
@@ -12,7 +12,7 @@ const signupUser = async(req,res) => {
         })
     }
 
-    const newUser = await User.create({ username, email, password, profilePicture, bio, notifications })
+    const newUser = await User.create({ username, email, password })
 
     if(User){
         res.status(201).json({
@@ -20,9 +20,6 @@ const signupUser = async(req,res) => {
             username: newUser.username,
             email: newUser.email,
             password: newUser.password,
-            profilePicture: newUser.profilePicture,
-            bio: newUser.bio,
-            notifications: newUser.notifications,
             token: generateToken(newUser._id)
         });
     } else {
@@ -41,10 +38,7 @@ const loginUser = async(req, res) => {
         res.json({
             _id: user._id,
             username: user.username,
-            email: user.email,
-            profilePicture: user.profilePicture,
-            bio: user.bio,
-            token: generateToken(user._id)
+            email: user.email
         })
     } else {
         res.status(400).json({
