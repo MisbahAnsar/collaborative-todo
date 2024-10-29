@@ -14,7 +14,7 @@ const signupUser = async(req,res) => {
 
     const newUser = await User.create({ username, email, password })
 
-    if(User){
+    if(newUser){
         res.status(201).json({
             _id: newUser._id,
             username: newUser.username,
