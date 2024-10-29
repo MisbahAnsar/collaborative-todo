@@ -1,4 +1,4 @@
-const { User }  = require('../models/Schema');
+const User = require('../models/userSchema')
 const generateToken = require('../utils/generatetoken');
 
 const signupUser = async(req,res) => {
@@ -34,14 +34,15 @@ const loginUser = async(req, res) => {
 
     const user = await User.findOne({ email });
 
-    if(user && await user.matchPassword({password})){
+    if(user && (await user.matchPassword( password ))){
         res.json({
             _id: user._id,
             username: user.username,
-            email: user.email
+            email: user.email,
+            token: generateToken(user._id)
         })
     } else {
-        res.status(400).json({
+        res.status(401).json({
             message: "Invalid username or password"
         })
     }
