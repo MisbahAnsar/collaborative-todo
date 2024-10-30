@@ -19,7 +19,6 @@ const signupUser = async(req,res) => {
             _id: newUser._id,
             username: newUser.username,
             email: newUser.email,
-            password: newUser.password,
             token: generateToken(newUser._id)
         });
     } else {

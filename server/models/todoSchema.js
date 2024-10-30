@@ -5,8 +5,12 @@ const TodoListSchema = new mongoose.Schema(
   {
     owner: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
     title: String,
-    tasks: [TaskSchema],
-    collaborators: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+    content: {
+      type: String,
+      required: true
+    },
+    // tasks: [TaskSchema],
+    // collaborators: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
   },
   { timestamps: true }
 );
