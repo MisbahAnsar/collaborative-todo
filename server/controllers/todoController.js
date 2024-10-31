@@ -6,6 +6,7 @@ exports.CreateTodo = async (req, res) => {
       owner: req.user.id,
       title: req.body.title,
       content: req.body.content,
+      tasks: req.body.tasks
     });
     await newPost.save();
     res.status(201).json(newPost);

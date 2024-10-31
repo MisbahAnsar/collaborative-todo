@@ -9,7 +9,7 @@ const TodoListSchema = new mongoose.Schema(
       type: String,
       required: true
     },
-    // tasks: [TaskSchema],
+    tasks: {type: mongoose.Schema.Types.ObjectId, ref: "Task", required: true},
     // collaborators: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
   },
   { timestamps: true }
