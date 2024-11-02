@@ -1,10 +1,12 @@
 const express = require('express');
-const router = express.Router();
 const { protect } = require('../middlewares/protect');
 const createTask = require('../controllers/taskControllers');
 
-router.post('/createtask', protect, createTask);
+const router = express.Router();
 
-module.exports = router;
+const taskRouter = (wss) => {
+    router.post('/createtask', protect, createTask(wss));
+    return router;
+}
 
-
+module.exports = taskRouter;
