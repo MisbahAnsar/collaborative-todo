@@ -12,13 +12,15 @@ const signupUser = async(req,res) => {
         })
     }
 
-    const newUser = await User.create({ username, email, password })
+    const newUser = await User.create({ username, email, password, profilePicture, bio})
 
     if(newUser){
         res.status(201).json({
             _id: newUser._id,
             username: newUser.username,
             email: newUser.email,
+            profilePicture: newUser.profilePicture,
+            bio: newUser.bio,
             token: generateToken(newUser._id)
         });
     } else {
