@@ -1,6 +1,18 @@
 const mongoose = require("mongoose");
 const bcrypt = require('bcrypt')
-// User Schema
+
+const { z } = require('zod');
+
+// Define Zod schema for validation
+const userValidation = z.object({
+    username: z.string().min(3).max(30),
+    email: z.string().email(),
+    password: z.string().min(8).max(40),
+    profilePicture: z.string().url().optional(),
+    bio: z.string().min(15).max(100),
+});
+
+
 const UserSchema = new mongoose.Schema(
   {
     username: { 
@@ -20,14 +32,23 @@ const UserSchema = new mongoose.Schema(
         required: true 
     },
     profilePicture: {
-        type: URL,
-        unique: false,
+        type: String
     },
     bio: {
         type: String,
         required: true
     }
 },{ timestamps: true });
+
+UserSchema.pre('save', function (next) {
+    const validationResult = userValidation.safeParse(this.toObject());
+    
+    if (!validationResult.success) {
+        const errorMessages = validationResult.error.errors.map(e => e.message).join(", ");
+        return next(new Error(errorMessages));
+    }
+    next();
+});
 
 UserSchema.pre('save', async function (next) {
     if (!this.isModified('password')) {
