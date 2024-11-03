@@ -3,7 +3,7 @@ const { CreateTodo, removeTodo, updateTodo } = require('../controllers/todoContr
 const router = express.Router();
 const { protect } = require('../middlewares/protect')
 
-router.post('/create', protect, CreateTodo);
+router.post('/list/create', protect, CreateTodo);
 router.delete('/remove/:todolistid', protect, removeTodo)
 router.put('/update/:todoId', protect, updateTodo)
 

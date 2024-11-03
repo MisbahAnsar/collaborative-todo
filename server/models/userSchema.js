@@ -1,15 +1,13 @@
 const mongoose = require("mongoose");
 const bcrypt = require('bcrypt')
-
 const { z } = require('zod');
 
-// Define Zod schema for validation
 const userValidation = z.object({
     username: z.string().min(3).max(30),
     email: z.string().email(),
     password: z.string().min(8).max(40),
     profilePicture: z.string().url().optional(),
-    bio: z.string().min(15).max(100),
+    bio: z.string().min(10).max(100),
 });
 
 
@@ -32,7 +30,8 @@ const UserSchema = new mongoose.Schema(
         required: true 
     },
     profilePicture: {
-        type: String
+        type: String,
+        required: true
     },
     bio: {
         type: String,

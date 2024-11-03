@@ -2,7 +2,7 @@ const User = require('../models/userSchema')
 const generateToken = require('../utils/generatetoken');
 
 const signupUser = async(req,res) => {
-    const { username, email, password } = req.body;
+    const { username, email, password, profilePicture, bio } = req.body;
 
     const userExists = await User.findOne({ email });
 
@@ -13,19 +13,16 @@ const signupUser = async(req,res) => {
     }
 
     const newUser = await User.create({ username, email, password, profilePicture, bio})
+    const savedUser = await User.findById(newUser._id).select("-password");
 
     if(newUser){
         res.status(201).json({
-            _id: newUser._id,
-            username: newUser.username,
-            email: newUser.email,
-            profilePicture: newUser.profilePicture,
-            bio: newUser.bio,
-            token: generateToken(newUser._id)
+            message: "User created successfully",
+            user: savedUser,
         });
     } else {
         res.status(400).json({
-            message: "Invalid data, please try again!"
+            message: "User ID or email already exists"
         })
     }
 };

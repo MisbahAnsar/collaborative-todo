@@ -9,7 +9,10 @@ exports.CreateTodo = async (req, res) => {
       tasks: req.body.tasks
     });
     await newPost.save();
-    res.status(201).json(newPost);
+    res.status(201).json({
+      message: "Todo list created successfully",
+      list: newPost
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Error creating post" });
@@ -18,9 +21,9 @@ exports.CreateTodo = async (req, res) => {
 
 exports.removeTodo = async (req, res) => {
   try {
-    const todolistid = req.user.id; // User ID from the authenticated request
-    const id = req.params.todolistid; // Extracting todo ID from request params
-
+    const todolistid = req.user.id;
+    const id = req.params.todolistid;
+    
     console.log(
       `Attempting to delete todo with ID: ${id} by owner: ${todolistid}`
     );
