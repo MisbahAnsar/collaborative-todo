@@ -5,7 +5,8 @@ const TaskSchema = new mongoose.Schema(
     title: { type: String, required: true },
     content: { type: String, required: true },
     completed: { type: Boolean, default: false },
-    assignedBy: { type: mongoose.Schema.Types.ObjectId, ref: "user", required: true},
+    assignedBy: { type: mongoose.Schema.Types.ObjectId, ref: "user"},
+    assignedTo: {type: mongoose.Schema.Types.ObjectId, ref: "user", required: true},
     priority: {
       type: String,
       enum: ["low", "medium", "high"],
