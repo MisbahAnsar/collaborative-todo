@@ -2,6 +2,7 @@ const User = require('../models/userSchema')
 const generateToken = require('../utils/generatetoken');
 
 const signupUser = async(req,res) => {
+    //destructuring here
     const { username, email, password, profilePicture, bio } = req.body;
 
     const userExists = await User.findOne({ email });

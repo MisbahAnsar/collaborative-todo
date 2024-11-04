@@ -1,23 +1,35 @@
 const Task = require("../models/taskSchema");
+const TodoList = require("../models/todoSchema");
 
 const createTask = (wss) => {
   return async (req, res) => {
     try {
       const todolistid = req.user.id;
-      const listId = req.params.listid;
+      const listId = req.params.listId;
 
       console.log(
         `Attempting to add todo with ID: ${listId} by owner: ${todolistid}`
       );
 
-      const newTask = new Task({
-        title: req.body.title,
-        content: req.body.content,
-        assignedBy: req.user.id,
-        assignedTo: req.body.assignedTo,
-      });
+      // const newTask = new Task({
+      //   title: req.body.title,
+      //   content: req.body.content,
+      //   assignedBy: req.user.id,
+      //   assignedTo: req.body.assignedTo,
+      // });
+      //destructuring 
+      const { title, content, assignedBy, assignedTo } = req.body;
+      
+      const newTask = await Task.create({ title, content, assignedBy, assignedTo });
 
-      await newTask.save();
+      const pushingtasktoTodo = await TodoList.updateOne({
+        _id: listId
+      },
+    {
+      $push: { tasks: newTask._id, tasks: newTask }
+    })
+
+      // await newTask.save();
       const response = {
         message: "Task added successfully",
         task: newTask,
