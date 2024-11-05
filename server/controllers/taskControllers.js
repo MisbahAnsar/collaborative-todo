@@ -10,13 +10,7 @@ const createTask = (wss) => {
       console.log(
         `Attempting to add todo with ID: ${listId} by owner: ${todolistid}`
       );
-
-      // const newTask = new Task({
-      //   title: req.body.title,
-      //   content: req.body.content,
-      //   assignedBy: req.user.id,
-      //   assignedTo: req.body.assignedTo,
-      // });
+      
       //destructuring 
       const { title, content, assignedBy, assignedTo } = req.body;
       
@@ -26,7 +20,7 @@ const createTask = (wss) => {
         _id: listId
       },
     {
-      $push: { tasks: newTask._id, tasks: newTask }
+      $push: { tasks: newTask._id }
     })
 
       // await newTask.save();
@@ -56,18 +50,29 @@ const createTask = (wss) => {
 const deleteTask = (wss) => {
   return async (req, res) => {
     try {
-      const { listTaskId } = req.params; // Task ID from URL parameters
-      const deletedTask = await Task.findByIdAndDelete(listTaskId);
+      const { taskId, listId } = req.params; 
+      
+      const deleteTask = await Task.deleteOne({
+        _id: taskId
+      })
+      
+      const deleteList = await TodoList.updateOne({
+        _id: listId
+      },
+      {
+        $pull: { tasks: taskId }
+      });
 
-      if (!deletedTask) {
-        return res.status(404).json({ error: "Task not found" });
+      if(deleteTask.deletedCount){
+        res.status(200).json({
+          message: "Task Deleted Successfully"
+        })
+      } else {
+        res.status(404).json({
+          message: "Task not found"
+        })
       }
-
-      const response = {
-         message: "Task deleted successfully"
-      };
-
-      res.status(200).json(response)
+      
       wss.clients.forEach((client) => {
         if (client.readyState === client.OPEN) {
           client.send(JSON.stringify(response));
