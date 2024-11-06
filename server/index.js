@@ -26,6 +26,10 @@ wss.on("connection", function connection(ws) {
 });
 
 app.use("/user", router);
-app.use("/post", todoRouter);
-app.use("/task", taskRouter(wss));
+app.use("/list", todoRouter);
+app.use("/list", taskRouter(wss));
 
+// tommorow jinwoo, export wss from index.js, 
+// nd import it in helper nd then make it work on 
+// the taskController, nd remove the wss from the 
+// taskRoute which u r currently sending as a prop

@@ -1,3 +1,4 @@
+const { default: mongoose } = require("mongoose");
 const TodoList = require("../models/todoSchema");
 
 exports.CreateTodo = async (req, res) => {
@@ -6,12 +7,12 @@ exports.CreateTodo = async (req, res) => {
       owner: req.user.id,
       title: req.body.title,
       content: req.body.content,
-      tasks: req.body.tasks
+      tasks: req.body.tasks,
     });
     await newPost.save();
     res.status(201).json({
       message: "Todo list created successfully",
-      list: newPost
+      list: newPost,
     });
   } catch (error) {
     console.error(error);
@@ -19,63 +20,93 @@ exports.CreateTodo = async (req, res) => {
   }
 };
 
-exports.removeTodo = async (req, res) => {
-  try {
-    const todolistid = req.user.id;
-    const id = req.params.todolistid;
-    
-    console.log(
-      `Attempting to delete todo with ID: ${id} by owner: ${todolistid}`
-    );
+exports.addCollaborator = async (req, res) => {
+  const listId = req.params.listId;
+  const newCollaboratorId = req.body.id;
 
-    const deletedTodo = await TodoList.findOneAndDelete({
-      _id: id,
-      owner: todolistid,
-    });
+  console.log("listId:", listId);
+  console.log("newCollaboratorId:", newCollaboratorId);
 
-    if (!deletedTodo) {
-      return res.status(404).json({ message: "Todo not found" });
-    }
+  const isFound = await TodoList.findOne({
+    _id: listId,
+  });
 
-    res.status(200).json({
-      message: "Todo deleted successfully",
+  if (!isFound) {
+    res.status(404).json({
+      message: "This list doesn't exist",
     });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({
-      message: "Cannot delete post",
-    });
+    return;
   }
+  const doesExist = isFound.collaborators.includes(newCollaboratorId);
+
+  if (doesExist) {
+    res.status(409).json({
+      message: "Already a collaborator",
+    });
+    return;
+  }
+
+  await TodoList.updateOne(
+    {
+      _id: listId,
+    },
+    {
+      $push: { collaborators: newCollaboratorId },
+    }
+  );
+
+  const PopulateCollaborators = await TodoList.findOne({
+    _id: listId,
+  }).populate("collaborators");
+
+  const CollaboratorList = PopulateCollaborators?.collaborators;
+
+  res.status(200).json({
+    message: "Collaborator Added Successfully",
+    Collaborators: CollaboratorList,
+  });
 };
 
-exports.updateTodo = async (req, res) => {
-  try {
-    const todoId = req.user.id;
-    const id = req.params.todoId;
-    const { title, content }  = req.body
+exports.removeCollaborator = async (req, res) => {
+  const { listId, userId } = req.params;
 
-    console.log(`Attempting to delete todo with ID: ${id} by owner: ${todoId}`);
-    
-    const updateTodo = await TodoList.findByIdAndUpdate(
-      { _id: id, owner: todoId },
-      { title: title, content: content },
-      { new: true }
-    );
+  // const listId = await mongoose.Types.ObjectId(listId)
+  // const userId = await mongoose.Types.ObjectId(userId)
 
-    if (!updateTodo) {
-      return res.status(404).json({
-        message: "Todo not found",
-      });
-    }
+  const isFound = await TodoList.findOne({
+    _id: listId
+  });
 
-    res.status(200).json({
-      message: "Todo updated successfully",
-    });
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({
-      message: "Cannot update post",
-    });
+  if(!isFound){
+    res.status(404).json({
+      message: "Given Team doesn't exist"
+    })
+    return;
   }
-};
 
+  const doesExist = isFound.collaborators.includes(userId, 0);
+
+  if(!doesExist){
+    res.status(409).json({
+      message: "Given Id doesn't belong to team"
+    })
+    return;
+  }
+
+  const details = await TodoList.updateOne({
+    _id: listId
+  }, {
+    $pull: { collaborators: userId }
+  })
+
+  if(details.modifiedCount){
+    res.json({
+      message: "Successfully removed collaborator",
+      details: details
+    })
+  } else {
+    res.json({
+      message: "Something went wrong!"
+    })
+  }  
+}

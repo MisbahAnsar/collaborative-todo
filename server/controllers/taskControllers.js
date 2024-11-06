@@ -1,5 +1,6 @@
 const Task = require("../models/taskSchema");
 const TodoList = require("../models/todoSchema");
+const { wsEventMsg } = require("../utils/helper");
 
 const createTask = (wss) => {
   return async (req, res) => {
@@ -50,8 +51,7 @@ const createTask = (wss) => {
 const deleteTask = (wss) => {
   return async (req, res) => {
     try {
-      const { taskId, listId } = req.params; 
-      
+      const { taskId, listId } = req.params;
       const deleteTask = await Task.deleteOne({
         _id: taskId
       })
@@ -67,7 +67,8 @@ const deleteTask = (wss) => {
         res.status(200).json({
           message: "Task Deleted Successfully"
         })
-      } else {
+        
+        } else {
         res.status(404).json({
           message: "Task not found"
         })
