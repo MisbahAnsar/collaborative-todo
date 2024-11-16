@@ -13,6 +13,8 @@ const signupUser = async(req,res) => {
         })
     }
 
+    console.log("hey wassup meow");
+
     const newUser = await User.create({ username, email, password, profilePicture, bio})
     const savedUser = await User.findById(newUser._id).select("-password");
 

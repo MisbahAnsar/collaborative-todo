@@ -42,12 +42,6 @@ const createTask = (wss) => {
   };
 };
 
-// const updateTask = async (req, res) => {
-//     try {
-//       const 
-//     }
-// }
-
 const deleteTask = (wss) => {
   return async (req, res) => {
     try {
