@@ -77,7 +77,7 @@ const Signup = () => {
       {/* password */}
       <input
         type="password"
-        name="passwor"
+        name="password"
         placeholder="  password"
         value={userData.password}
         onChange={handleChange}
