@@ -6,14 +6,12 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 interface User {
-  username: string;
   email: string;
   password: string;
 }
 
-const Signup = () => {
+const Login = () => {
   const [userData, setUserData] = useState<User>({
-    username: "",
     email: "",
     password: "",
   });
@@ -32,22 +30,16 @@ const Signup = () => {
 
   const handleSignup = async () => {
     try {
-      const response = await api.signup(userData);
-      toast.success("User created Successfully. Now please Login", {
-        position: "bottom-right",
-      });
+      const response = await api.login(userData);
+      navigate("/home");
       console.log(response);
     } catch (error: any) {
       if (error?.response?.status === 409) {
-        toast.error("User already exists. Please try logging in.", {
+        toast.error("Please put the right credentials and try again.", {
           position: "bottom-right",
         });
       }
     }
-  };
-
-  const handleLoginbutton = () => {
-    navigate("/login");
   };
 
   return (
@@ -71,16 +63,12 @@ const Signup = () => {
 
       {/* RIGHT SIDE */}
       <div className="right-side w-full lg:w-1/2 bg-black relative flex items-center justify-center">
-        <h1
-          onClick={handleLoginbutton}
-          className="absolute right-6 top-4 lg:right-10 lg:top-10 text-xl font-semibold cursor-pointer"
-        >
-          LOGIN
-        </h1>
         <div className="signup-form flex flex-col items-center mx-auto">
-          <h1 className="text-white font-bold text-4xl">Create an Account</h1>
+          <h1 className="text-white font-bold text-4xl">
+            Login to your Account
+          </h1>
           <p className="text-gray-500 text-lg font-semibold p-2">
-            Enter the details below to create your account.
+            Enter the details below to logging to your account.
           </p>
           <form
             onSubmit={(e) => {
@@ -89,16 +77,6 @@ const Signup = () => {
             }}
             className="flex flex-col gap-2 w-full"
           >
-            <input
-              type="username"
-              name="username"
-              placeholder="  username"
-              autoComplete="username"
-              value={userData.username}
-              onChange={handleChange}
-              className="p-2 mx-8 rounded-md text-white bg-black border border-gray-600 focus:outline-none"
-              required
-            />
             {/* email */}
             <input
               type="email"
@@ -127,7 +105,7 @@ const Signup = () => {
                 type="submit"
                 className="bg-white hover:bg-blue-600 text-black font-semibold py-2 w-full mx-8 rounded-md mt-2"
               >
-                Sign Up
+                Login
               </button>
             </div>
             <p className="text-gray-500 text-md text-center mt-4">
@@ -150,4 +128,4 @@ const Signup = () => {
   );
 };
 
-export default Signup;
+export default Login;

@@ -7,7 +7,7 @@ const userValidation = z.object({
     email: z.string().email(),
     password: z.string().min(8).max(40),
     profilePicture: z.string().url().optional(),
-    bio: z.string().min(10).max(100),
+    bio: z.string().min(10).max(100).optional(),
 });
 
 
@@ -31,11 +31,10 @@ const UserSchema = new mongoose.Schema(
     },
     profilePicture: {
         type: String,
-        required: true
     },
     bio: {
         type: String,
-        required: true
+        // required: false
     }
 },{ timestamps: true });
 
