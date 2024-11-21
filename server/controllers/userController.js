@@ -40,7 +40,7 @@ const loginUser = async(req, res) => {
             _id: user._id,
             username: user.username,
             email: user.email,
-            token: generateToken(user._id)
+            token: generateToken(user.username)
         })
     } else {
         res.status(401).json({
@@ -49,4 +49,19 @@ const loginUser = async(req, res) => {
     }
 }
 
-module.exports = {signupUser, loginUser}
+const getUserDetails = async (req, res) => {
+    try {
+        const user = req.user.username;
+        if (!user) {
+            return res.status(404).json({
+                message: 'User not found.' });
+        }
+        return res.json({
+            username: user
+        });
+    } catch (error) {
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
+};
+
+module.exports = {signupUser, loginUser, getUserDetails}
