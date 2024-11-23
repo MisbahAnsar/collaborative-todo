@@ -6,7 +6,6 @@ exports.CreateTodo = async (req, res) => {
     const newPost = new TodoList({
       owner: req.user.id,
       title: req.body.title,
-      content: req.body.content,
       tasks: req.body.tasks,
     });
     await newPost.save();
@@ -19,6 +18,24 @@ exports.CreateTodo = async (req, res) => {
     res.status(500).json({ message: "Error creating post" });
   }
 };
+
+exports.getList = async (req, res) => {
+  try {
+    const lists = await TodoList.find({ owner: req.user.id});
+    if (lists.length === 0) {
+        return res.status(404).json({
+            message: 'list not found.' });
+    }
+
+    return res.json({
+      lists: lists,
+    });
+} catch (error) {
+    res.status(500).json({ 
+      message: 'Server error', error: error.message
+    });
+  }
+}
 
 exports.addCollaborator = async (req, res) => {
   const listId = req.params.listId;
@@ -70,8 +87,6 @@ exports.addCollaborator = async (req, res) => {
 exports.removeCollaborator = async (req, res) => {
   const { listId, userId } = req.params;
 
-  // const listId = await mongoose.Types.ObjectId(listId)
-  // const userId = await mongoose.Types.ObjectId(userId)
 
   const isFound = await TodoList.findOne({
     _id: listId
