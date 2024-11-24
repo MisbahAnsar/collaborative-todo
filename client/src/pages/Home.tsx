@@ -1,25 +1,37 @@
 import { useState } from "react";
-import { CreateTask }  from "../components/CreateTask";
+import { CreateList } from "../components/CreateList1";
 import { Header } from "../components/Header1";
+import { MainContent } from "../components/MainContent";
+import { CreateTask } from "../components/CreateTask";
 
 const Home = () => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isListModalOpen, setIsListModalOpen] = useState(false);
+  const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
+  const [selectedList, setSelectedList] = useState<{ id: number; title: string } | null>(null);
 
-  const handleOpenModal = () => setIsModalOpen(true);
-  const handleCloseModal = () => setIsModalOpen(false);
+  const handleOpenListModal = () => setIsListModalOpen(true);
+  const handleCloseListModal = () => setIsListModalOpen(false);
+
+  const handleOpenTaskModal = () => setIsTaskModalOpen(true);
+  const handleCloseTaskModal = () => setIsTaskModalOpen(false);
+
+  const handleSelectList = (list: { id: number; title: string }) => {
+    setSelectedList(list);
+  };
 
   return (
     <div className="relative h-screen text-white">
-      {/* Pass handleOpenModal to Header */}
-      <Header onNewListClick={handleOpenModal} />
+      <Header onNewListClick={handleOpenListModal} onSelectList={handleSelectList} />
 
       {/* Main Content */}
-      <div className="bg-[#252222] h-full w-full">
-        <div className="p-4">Main Content</div>
-      </div>
+      <MainContent
+        selectedList={selectedList}
+        onOpenTaskModal={handleOpenTaskModal}
+      />
 
-      {/* Task Modal */}
-      <CreateTask isOpen={isModalOpen} onClose={handleCloseModal} />
+      {/* Modals */}
+      <CreateList isOpen={isListModalOpen} onClose={handleCloseListModal} />
+      <CreateTask isOpen={isTaskModalOpen} onClose={handleCloseTaskModal} />
     </div>
   );
 };

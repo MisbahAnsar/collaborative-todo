@@ -6,9 +6,10 @@ import { BsLayoutSidebar } from "react-icons/bs";
 
 interface HeaderProps {
   onNewListClick: () => void;
+  onSelectList: (list: { id: number; title: string }) => void;
 }
 
-export function Header({ onNewListClick }: HeaderProps) {
+export function Header({ onNewListClick, onSelectList }: HeaderProps) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [username, setUsername] = useState<string | null>(null);
 
@@ -31,14 +32,13 @@ export function Header({ onNewListClick }: HeaderProps) {
 
   return (
     <header className="relative bg-[#1B1A1A] border-b border-gray-700 p-4 flex items-center text-white">
-      {/* Sidebar */}
       <Sidebar
         isOpen={isSidebarOpen}
         onClose={() => setIsSidebarOpen(false)}
         onNewListClick={onNewListClick}
+        onSelectList={onSelectList} // Pass the prop
       />
 
-      {/* Header Content */}
       <div className="flex items-center space-x-4">
         <button onClick={handleSidebarToggle} className="text-white">
           <BsLayoutSidebar className="h-5 w-5" />

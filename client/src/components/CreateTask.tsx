@@ -1,61 +1,78 @@
-'use client'
+'use client';
 
-import { useState, useEffect, useRef } from 'react'
-import { X } from 'lucide-react'
-import { api } from "../utils/api"; // Make sure to have your API handling here.
+import { useState, useEffect, useRef } from 'react';
+import { X } from 'lucide-react';
+import { api } from '../utils/api';
 
 interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
+  listId: string | null; // Accept listId as a prop (can be null initially)
 }
 
-export function CreateTask({ isOpen, onClose }: ModalProps) {
-  const [title, setTitle] = useState('')
-  const [content, setContent] = useState('')
-  const modalRef = useRef<HTMLDivElement>(null)
+export function CreateTask({ isOpen, onClose, listId }: ModalProps) {
+  const [title, setTitle] = useState('');
+  const [content, setContent] = useState('');
+  const [priority, setPriority] = useState('medium'); // Default priority
+  const [dueDate, setDueDate] = useState<string>(''); // ISO date string
+  const modalRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
-        onClose()
+        onClose();
       }
-    }
+    };
 
     if (isOpen) {
-      document.addEventListener('mousedown', handleClickOutside)
+      document.addEventListener('mousedown', handleClickOutside);
     }
 
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside)
-    }
-  }, [isOpen])
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isOpen]);
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
 
-    if (!title.trim()) {
-      alert("Title and description are required.")
-      return
+    if (!listId) {
+      alert('Error: No list selected. Please select a valid list to add the task.');
+      return;
+    }
+
+    if (!title.trim() || !content.trim()) {
+      alert('Title and description are required.');
+      return;
     }
 
     try {
-      const response = await api.createList({
+      const taskData = {
         title,
-      })
-      console.log("Task created: ", response.data)
-      alert("Task created successfully!")
-      onClose() // Close modal after task creation
-      setTitle('') // Reset fields
-      setContent('')
+        content,
+        priority,
+        dueDate: dueDate ? new Date(dueDate) : undefined, // Only send if set
+        completed: false, // Default value
+        assignedTo: 'some-user-id', // Replace with dynamic user ID
+      };
+
+      // Call API to create the task under the specified listId
+      const response = await api.createTask(listId, taskData);
+
+      alert('Task created successfully!');
+      onClose();
+      setTitle('');
+      setContent('');
+      setPriority('medium');
+      setDueDate('');
     } catch (error) {
-      console.error("Error creating task: ", error)
-      alert("Failed to create task.")
+      console.error('Error creating task: ', error);
+      alert('Failed to create task. Please try again.');
     }
-  }
+  };
 
   return (
     <>
-      {/* Modal */}
       {isOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div ref={modalRef} className="bg-[#1B1A1A] rounded-lg p-6 w-full max-w-md">
@@ -92,18 +109,39 @@ export function CreateTask({ isOpen, onClose }: ModalProps) {
                   onChange={(e) => setContent(e.target.value)}
                   className="w-full px-3 py-2 bg-gray-800 text-white rounded-md border border-gray-700 focus:outline-none focus:ring-2 focus:ring-orange-400"
                   placeholder="Enter task description"
+                  required
                 />
               </div>
 
-              {/* Priority and Date */}
-              <div className="flex gap-2 items-center mb-4">
-                {/* Example Priority Dropdown Component */}
-                <a className="border-2 border-gray-600 px-4 py-2 rounded-md">
+              {/* Priority input */}
+              <div className="mb-4">
+                <label htmlFor="priority" className="block text-sm font-medium text-gray-300 mb-1">
                   Priority
-                </a>
-                <a className="border-2 border-gray-600 px-4 py-2 rounded-md">
-                  Date
-                </a>
+                </label>
+                <select
+                  id="priority"
+                  value={priority}
+                  onChange={(e) => setPriority(e.target.value)}
+                  className="w-full px-3 py-2 bg-gray-800 text-white rounded-md border border-gray-700 focus:outline-none focus:ring-2 focus:ring-orange-400"
+                >
+                  <option value="low">Low</option>
+                  <option value="medium">Medium</option>
+                  <option value="high">High</option>
+                </select>
+              </div>
+
+              {/* Due Date input */}
+              <div className="mb-4">
+                <label htmlFor="dueDate" className="block text-sm font-medium text-gray-300 mb-1">
+                  Due Date
+                </label>
+                <input
+                  type="date"
+                  id="dueDate"
+                  value={dueDate}
+                  onChange={(e) => setDueDate(e.target.value)}
+                  className="w-full px-3 py-2 bg-gray-800 text-white rounded-md border border-gray-700 focus:outline-none focus:ring-2 focus:ring-orange-400"
+                />
               </div>
 
               {/* Submit button */}
@@ -120,5 +158,5 @@ export function CreateTask({ isOpen, onClose }: ModalProps) {
         </div>
       )}
     </>
-  )
+  );
 }
