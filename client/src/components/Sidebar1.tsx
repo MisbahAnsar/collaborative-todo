@@ -7,11 +7,11 @@ interface SidebarProps {
   isOpen: boolean;
   onClose: () => void;
   onNewListClick: () => void;
-  onSelectList: (list: { id: number; title: string }) => void;
+  onSelectList: (list: { _id: string; title: string }) => void;
 }
 
 const Sidebar = ({ isOpen, onClose, onNewListClick, onSelectList }: SidebarProps) => {
-  const [lists, setLists] = useState<{ id: number; title: string }[]>([]);
+  const [lists, setLists] = useState<{ _id: string; title: string }[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
 
   // Fetch the lists when the component mounts
@@ -71,7 +71,7 @@ const Sidebar = ({ isOpen, onClose, onNewListClick, onSelectList }: SidebarProps
         ) : (
           filteredLists.map((list) => (
             <button
-              key={list.id}
+              key={list._id}
               className="w-full text-left p-2 hover:bg-gray-800 rounded text-white"
               onClick={() => onSelectList(list)}
             >

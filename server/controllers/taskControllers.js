@@ -12,32 +12,50 @@ const createTask = (wss) => {
         `Attempting to add todo with ID: ${listId} by owner: ${todolistid}`
       );
       
-      //destructuring 
-      const { title, content, assignedBy, assignedTo } = req.body;
+      const { title, content, assignedBy, assignedTo, priority, dueDate } = req.body;
       
-      const newTask = await Task.create({ title, content, assignedBy, assignedTo });
+      // Convert string IDs to ObjectIds
+      const assignedByObjectId = assignedBy ? new mongoose.Types.ObjectId(assignedBy) : null;
+      const assignedToObjectId = new mongoose.Types.ObjectId(assignedTo);
+      
+      // Create new task with proper ObjectIds
+      const newTask = await Task.create({
+        title,
+        content,
+        assignedBy: assignedByObjectId,
+        assignedTo: assignedToObjectId,
+        priority,
+        dueDate: dueDate ? new Date(dueDate) : undefined
+      });
 
-      const pushingtasktoTodo = await TodoList.updateOne({
-        _id: listId
-      },
-    {
-      $push: { tasks: newTask._id }
-    })
+      const pushingtasktoTodo = await TodoList.updateOne(
+        { _id: listId },
+        { $push: { tasks: newTask._id } }
+      );
 
-      // await newTask.save();
+      if (!pushingtasktoTodo.modifiedCount) {
+        throw new Error('Todo list not found or task not added');
+      }
+
       const response = {
         message: "Task added successfully",
         task: newTask,
       };
+      
       res.status(201).json(response);
 
+      // Notify WebSocket clients
       wss.clients.forEach((client) => {
         if (client.readyState === client.OPEN) {
           client.send(JSON.stringify(response));
         }
       });
-    } catch {
-      res.status(500).json({ message: "Error creating post" });
+    } catch (error) {
+      console.error('Error creating task:', error);
+      res.status(500).json({ 
+        message: "Error creating task",
+        error: error.message 
+      });
     }
   };
 };

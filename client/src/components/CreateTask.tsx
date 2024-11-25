@@ -7,14 +7,14 @@ import { api } from '../utils/api';
 interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
-  listId: string | null; // Accept listId as a prop (can be null initially)
+  listId: string | null;
 }
 
 export function CreateTask({ isOpen, onClose, listId }: ModalProps) {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
-  const [priority, setPriority] = useState('medium'); // Default priority
-  const [dueDate, setDueDate] = useState<string>(''); // ISO date string
+  const [priority, setPriority] = useState('');
+  const [dueDate, setDueDate] = useState<string>('');
   const modalRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -47,29 +47,36 @@ export function CreateTask({ isOpen, onClose, listId }: ModalProps) {
     }
 
     try {
+      const userId = localStorage.getItem('userId');
+      
       const taskData = {
-        title,
-        content,
-        priority,
-        dueDate: dueDate ? new Date(dueDate) : undefined, // Only send if set
-        completed: false, // Default value
-        assignedTo: 'some-user-id', // Replace with dynamic user ID
+        title: title.trim(),
+        content: content.trim(),
+        assignedBy: userId, // This should be a valid MongoDB ObjectId string
+        priority: priority || 'medium',
+        dueDate: dueDate ? new Date(dueDate) : undefined,
+        completed: false,
+        assignedTo: '6740cd1fefaf52b79810ecb8', // Make sure this is a valid MongoDB ObjectId
       };
 
-      // Call API to create the task under the specified listId
       const response = await api.createTask(listId, taskData);
-
-      alert('Task created successfully!');
-      onClose();
-      setTitle('');
-      setContent('');
-      setPriority('medium');
-      setDueDate('');
+      console.log('Task creation response:', response);
+      
+      if (response.task) {
+        alert('Task created successfully!');
+        onClose();
+        setTitle('');
+        setContent('');
+        setPriority('medium');
+        setDueDate('');
+      } else {
+        throw new Error('Invalid response from server');
+      }
     } catch (error) {
-      console.error('Error creating task: ', error);
-      alert('Failed to create task. Please try again.');
+      console.error('Error creating task:', error);
+      alert(error instanceof Error ? error.message : 'Failed to create task. Please try again.');
     }
-  };
+};
 
   return (
     <>
@@ -98,7 +105,7 @@ export function CreateTask({ isOpen, onClose, listId }: ModalProps) {
                 />
               </div>
 
-              {/* Content input */}
+
               <div className="mb-4">
                 <label htmlFor="content" className="block text-sm font-medium text-gray-300 mb-1">
                   Description
@@ -113,7 +120,7 @@ export function CreateTask({ isOpen, onClose, listId }: ModalProps) {
                 />
               </div>
 
-              {/* Priority input */}
+
               <div className="mb-4">
                 <label htmlFor="priority" className="block text-sm font-medium text-gray-300 mb-1">
                   Priority
@@ -130,7 +137,7 @@ export function CreateTask({ isOpen, onClose, listId }: ModalProps) {
                 </select>
               </div>
 
-              {/* Due Date input */}
+
               <div className="mb-4">
                 <label htmlFor="dueDate" className="block text-sm font-medium text-gray-300 mb-1">
                   Due Date
@@ -144,7 +151,7 @@ export function CreateTask({ isOpen, onClose, listId }: ModalProps) {
                 />
               </div>
 
-              {/* Submit button */}
+
               <div className="flex justify-end">
                 <button
                   type="submit"

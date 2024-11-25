@@ -6,7 +6,7 @@ import { BsLayoutSidebar } from "react-icons/bs";
 
 interface HeaderProps {
   onNewListClick: () => void;
-  onSelectList: (list: { id: number; title: string }) => void;
+  onSelectList: (list: { _id: string; title: string }) => void;
 }
 
 export function Header({ onNewListClick, onSelectList }: HeaderProps) {

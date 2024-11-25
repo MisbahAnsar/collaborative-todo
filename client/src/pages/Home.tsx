@@ -7,7 +7,7 @@ import { CreateTask } from "../components/CreateTask";
 const Home = () => {
   const [isListModalOpen, setIsListModalOpen] = useState(false);
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
-  const [selectedList, setSelectedList] = useState<{ id: number; title: string } | null>(null);
+  const [selectedList, setSelectedList] = useState<{ _id: string; title: string } | null>(null);
 
   const handleOpenListModal = () => setIsListModalOpen(true);
   const handleCloseListModal = () => setIsListModalOpen(false);
@@ -15,8 +15,9 @@ const Home = () => {
   const handleOpenTaskModal = () => setIsTaskModalOpen(true);
   const handleCloseTaskModal = () => setIsTaskModalOpen(false);
 
-  const handleSelectList = (list: { id: number; title: string }) => {
+  const handleSelectList = (list: { _id: string; title: string }) => {
     setSelectedList(list);
+    setIsListModalOpen(false);
   };
 
   return (
@@ -31,7 +32,7 @@ const Home = () => {
 
       {/* Modals */}
       <CreateList isOpen={isListModalOpen} onClose={handleCloseListModal} />
-      <CreateTask isOpen={isTaskModalOpen} onClose={handleCloseTaskModal} />
+      <CreateTask isOpen={isTaskModalOpen} onClose={handleCloseTaskModal} listId={selectedList ? (selectedList._id) : null}/>
     </div>
   );
 };
