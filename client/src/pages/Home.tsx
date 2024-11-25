@@ -21,7 +21,7 @@ const Home = () => {
   };
 
   return (
-    <div className="relative h-screen text-white">
+    <div className="relative h-full text-white">
       <Header onNewListClick={handleOpenListModal} onSelectList={handleSelectList} />
 
       {/* Main Content */}

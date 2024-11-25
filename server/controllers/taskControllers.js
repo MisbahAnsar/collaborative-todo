@@ -15,15 +15,15 @@ const createTask = (wss) => {
       const { title, content, assignedBy, assignedTo, priority, dueDate } = req.body;
       
       // Convert string IDs to ObjectIds
-      const assignedByObjectId = assignedBy ? new mongoose.Types.ObjectId(assignedBy) : null;
-      const assignedToObjectId = new mongoose.Types.ObjectId(assignedTo);
+      // const assignedByObjectId = assignedBy ? new mongoose.Types.ObjectId(assignedBy) : null;
+      // const assignedToObjectId = new mongoose.Types.ObjectId(assignedTo);
       
       // Create new task with proper ObjectIds
       const newTask = await Task.create({
         title,
         content,
-        assignedBy: assignedByObjectId,
-        assignedTo: assignedToObjectId,
+        assignedBy,
+        assignedTo,
         priority,
         dueDate: dueDate ? new Date(dueDate) : undefined
       });
@@ -100,6 +100,36 @@ const deleteTask = (wss) => {
   };
 };
 
+const getTasks = (wss) => {
+  return async (req, res) => {
+    try{
+      const listId = req.params.listId;
+
+      console.log("listId", listId,);
+
+      const todoList = await TodoList.findById(listId).populate({
+        path: 'tasks',
+        model: 'Task',
+      });
+
+      if (!todoList) {
+        return res.status(404).json({ message: "Todo list not found" });
+      }
+
+      res.status(200).json({
+        message : "Tasks retrieved successfully",
+        tasks: todoList.tasks,
+      });
+    } catch (error) {
+      console.error("Error fetching tasks:", error);
+      res.status(500).json({
+        message: "Error fetching tasks",
+        error: error.message,
+      });
+    }
+  }
+}
 
 
-module.exports = { createTask, deleteTask };
+
+module.exports = { createTask, deleteTask, getTasks };
