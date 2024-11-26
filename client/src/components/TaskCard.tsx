@@ -37,6 +37,9 @@ export function TaskCard({
     medium: <AlertCircle className="h-4 w-4" />,
     high: <AlertCircle className="h-4 w-4" />
   }
+  
+  const formattedDueDate = new Date(dueDate).toLocaleDateString('en-GB'); // Converts ISO string to dd,mm,yyyy
+
 
   return (
     <div className="bg-[#2A2727] rounded-lg shadow-md p-4 mb-4">
@@ -77,7 +80,7 @@ export function TaskCard({
       <div className="mt-4 flex items-center justify-between text-sm text-gray-400">
         <div className="flex items-center">
           <Calendar className="h-4 w-4 mr-1" />
-          <span>(dueDate: (format{dueDate}))</span>
+          <span>Due Date: {formattedDueDate}</span>
         </div>
         <div className="flex items-center">
           <User className="h-4 w-4 mr-1" />

@@ -18,14 +18,6 @@ export const MainContent = ({ selectedList, onOpenTaskModal }: MainContentProps)
         task._id === id ? { ...task, completed: !task.completed } : task
       )
     );
-
-    // Optionally, you can also make an API call here to update the task completion status on the server.
-    // try {
-    //   await api.updateTaskStatus(id, { completed: !tasks.find((task) => task._id === id)?.completed });
-    // } catch (err) {
-    //   console.error('Failed to update task status', err);
-    //   setError('Error toggling task status.');
-    // }
   };
 
   useEffect(() => {
@@ -50,11 +42,11 @@ export const MainContent = ({ selectedList, onOpenTaskModal }: MainContentProps)
   }, [selectedList]);
 
   return (
-    <div className="bg-[#252222] h-full w-full flex justify-center">
+    <div className="bg-[#252222] h-screen w-full flex justify-center">
       <div className="p-6 max-w-7xl w-full">
         {selectedList ? (
           <>
-            <h2 className="text-2xl capitalize h-auto font-bold mb-4">{selectedList.title}</h2>
+            <h2 className="text-2xl capitalize font-bold mb-4">{selectedList.title}</h2>
             <div className="flex mb-4">
               <input
                 type="text"
@@ -82,8 +74,14 @@ export const MainContent = ({ selectedList, onOpenTaskModal }: MainContentProps)
                     title={task.title}
                     content={task.content}
                     completed={task.completed}
-                    assignedBy={task.assignedBy}
-                    assignedTo={task.assignedTo}
+                    assignedBy={{
+                      id: task.assignedBy?._id || "",
+                      name: task.assignedBy?.username || "Unknown",
+                    }}
+                    assignedTo={{
+                      id: task.assignedTo?._id || "",
+                      name: task.assignedTo?.username || "Unknown",
+                    }}
                     priority={task.priority}
                     dueDate={task.dueDate}
                     onToggleComplete={toggleTaskComplete}
@@ -91,11 +89,11 @@ export const MainContent = ({ selectedList, onOpenTaskModal }: MainContentProps)
                 ))}
               </div>
             ) : (
-              <p className="text-gray-400">No tasks found for this list.</p>
+              <p className="text-gray-400 h-screen">No tasks found for this list.</p>
             )}
           </>
         ) : (
-          <p className="text-gray-400">Select a list from the sidebar to view tasks.</p>
+          <p className="text-gray-400 h-screen">Select a list from the sidebar to view tasks.</p>
         )}
       </div>
     </div>

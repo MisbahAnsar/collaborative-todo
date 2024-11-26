@@ -14,11 +14,6 @@ const createTask = (wss) => {
       
       const { title, content, assignedBy, assignedTo, priority, dueDate } = req.body;
       
-      // Convert string IDs to ObjectIds
-      // const assignedByObjectId = assignedBy ? new mongoose.Types.ObjectId(assignedBy) : null;
-      // const assignedToObjectId = new mongoose.Types.ObjectId(assignedTo);
-      
-      // Create new task with proper ObjectIds
       const newTask = await Task.create({
         title,
         content,
@@ -44,7 +39,6 @@ const createTask = (wss) => {
       
       res.status(201).json(response);
 
-      // Notify WebSocket clients
       wss.clients.forEach((client) => {
         if (client.readyState === client.OPEN) {
           client.send(JSON.stringify(response));
@@ -110,6 +104,10 @@ const getTasks = (wss) => {
       const todoList = await TodoList.findById(listId).populate({
         path: 'tasks',
         model: 'Task',
+        populate: [
+          { path: "assignedBy", model: "User", select: "username" },
+          { path: "assignedTo", model: "User", select: "username" },
+        ],
       });
 
       if (!todoList) {
