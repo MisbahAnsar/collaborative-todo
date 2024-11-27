@@ -1,4 +1,3 @@
-const { default: mongoose } = require("mongoose");
 const TodoList = require("../models/todoSchema");
 
 exports.CreateTodo = async (req, res) => {

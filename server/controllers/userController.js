@@ -1,5 +1,6 @@
 const User = require('../models/userSchema')
 const generateToken = require('../utils/generatetoken');
+const nodemailer = require('nodemailer');
 
 const signupUser = async(req,res) => {
     //destructuring here
